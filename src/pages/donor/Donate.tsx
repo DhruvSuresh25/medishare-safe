@@ -145,7 +145,7 @@ export default function DonateMedicine() {
           is_sealed: isSealed,
           is_original_packaging: isOriginalPackaging,
           status: 'pending' as const,
-          ocr_raw_data: extractedData,
+          ocr_raw_data: JSON.parse(JSON.stringify(extractedData)),
         }])
         .select()
         .single();
