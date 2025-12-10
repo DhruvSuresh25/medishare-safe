@@ -82,7 +82,7 @@ export default function RecipientDashboard() {
             To access donated medicines, please register your organization details.
           </p>
           <Button asChild size="lg">
-            <Link to="/recipient/organization">Register Organization</Link>
+            <Link to="/recipient/register">Register Organization</Link>
           </Button>
         </div>
       </DashboardLayout>

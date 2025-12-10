@@ -29,6 +29,7 @@ import VerifyMedicine from "./pages/pharmacist/Verify";
 import RecipientDashboard from "./pages/recipient/Dashboard";
 import AvailableMedicines from "./pages/recipient/Available";
 import MyClaims from "./pages/recipient/Claims";
+import RecipientRegister from "./pages/recipient/Register";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -70,6 +71,8 @@ const App = () => (
             
             {/* Recipient Routes */}
             <Route path="/recipient" element={<RecipientDashboard />} />
+            <Route path="/recipient/register" element={<RecipientRegister />} />
+            <Route path="/recipient/organization" element={<RecipientRegister />} />
             <Route path="/recipient/available" element={<AvailableMedicines />} />
             <Route path="/recipient/claims" element={<MyClaims />} />
             
