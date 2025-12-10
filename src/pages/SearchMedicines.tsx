@@ -102,7 +102,7 @@ export default function SearchMedicines() {
           title: 'Not registered as recipient',
           description: 'You need to register as a recipient organization to buy medicines.',
         });
-        setClaiming(null);
+        navigate('/recipient/register');
         return;
       }
 
