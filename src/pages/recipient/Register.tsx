@@ -15,7 +15,7 @@ import { z } from 'zod';
 
 const registerSchema = z.object({
   organization_name: z.string().min(2, 'Organization name must be at least 2 characters').max(200),
-  organization_type: z.enum(['pharmacy', 'ngo', 'clinic', 'hospital', 'take_back_center']),
+  organization_type: z.enum(['individual', 'pharmacy', 'ngo', 'clinic', 'hospital', 'take_back_center']),
   contact_person: z.string().min(2, 'Contact person name is required').max(100),
   contact_phone: z.string().min(10, 'Valid phone number is required').max(15),
   contact_email: z.string().email('Valid email is required').max(255),
@@ -27,6 +27,7 @@ const registerSchema = z.object({
 });
 
 const organizationTypes = [
+  { value: 'individual', label: 'Individual / Common Person' },
   { value: 'pharmacy', label: 'Pharmacy' },
   { value: 'ngo', label: 'NGO / Non-Profit' },
   { value: 'clinic', label: 'Clinic' },
@@ -43,7 +44,7 @@ export default function RecipientRegister() {
   
   const [formData, setFormData] = useState({
     organization_name: '',
-    organization_type: '' as 'pharmacy' | 'ngo' | 'clinic' | 'hospital' | 'take_back_center' | '',
+    organization_type: '' as 'individual' | 'pharmacy' | 'ngo' | 'clinic' | 'hospital' | 'take_back_center' | '',
     contact_person: '',
     contact_phone: '',
     contact_email: user?.email || '',
@@ -85,7 +86,7 @@ export default function RecipientRegister() {
       const { error: insertError } = await supabase.from('recipients').insert({
         user_id: user!.id,
         organization_name: formData.organization_name,
-        organization_type: formData.organization_type as 'pharmacy' | 'ngo' | 'clinic' | 'hospital' | 'take_back_center',
+        organization_type: formData.organization_type as 'individual' | 'pharmacy' | 'ngo' | 'clinic' | 'hospital' | 'take_back_center',
         contact_person: formData.contact_person,
         contact_phone: formData.contact_phone,
         contact_email: formData.contact_email,
