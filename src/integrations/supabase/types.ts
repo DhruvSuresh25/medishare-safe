@@ -741,6 +741,7 @@ export type Database = {
         | "clinic"
         | "hospital"
         | "take_back_center"
+        | "individual"
       verification_status: "pending" | "approved" | "rejected" | "needs_info"
     }
     CompositeTypes: {
@@ -899,6 +900,7 @@ export const Constants = {
         "clinic",
         "hospital",
         "take_back_center",
+        "individual",
       ],
       verification_status: ["pending", "approved", "rejected", "needs_info"],
     },
