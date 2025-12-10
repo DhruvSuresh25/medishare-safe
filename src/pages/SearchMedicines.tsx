@@ -11,6 +11,36 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Search, Package, Calendar, IndianRupee, ShoppingCart } from 'lucide-react';
 import { format } from 'date-fns';
 
+// Import medicine images
+import paracetamolImg from '@/assets/medicines/paracetamol.jpg';
+import amoxicillinImg from '@/assets/medicines/amoxicillin.jpg';
+import cetirizineImg from '@/assets/medicines/cetirizine.jpg';
+import omeprazoleImg from '@/assets/medicines/omeprazole.jpg';
+import metforminImg from '@/assets/medicines/metformin.jpg';
+import azithromycinImg from '@/assets/medicines/azithromycin.jpg';
+import vitaminD3Img from '@/assets/medicines/vitamin-d3.jpg';
+import pantoprazoleImg from '@/assets/medicines/pantoprazole.jpg';
+
+// Map drug names to images
+const medicineImages: Record<string, string> = {
+  'paracetamol': paracetamolImg,
+  'amoxicillin': amoxicillinImg,
+  'cetirizine': cetirizineImg,
+  'omeprazole': omeprazoleImg,
+  'metformin': metforminImg,
+  'azithromycin': azithromycinImg,
+  'vitamin d3': vitaminD3Img,
+  'pantoprazole': pantoprazoleImg,
+};
+
+const getMedicineImage = (drugName: string, uploadedImage?: string) => {
+  if (uploadedImage) return uploadedImage;
+  const key = Object.keys(medicineImages).find(k => 
+    drugName.toLowerCase().includes(k)
+  );
+  return key ? medicineImages[key] : null;
+};
+
 export default function SearchMedicines() {
   const { user, loading: authLoading } = useAuth();
   const [medicines, setMedicines] = useState<any[]>([]);
@@ -37,11 +67,12 @@ export default function SearchMedicines() {
       .from('medicines')
       .select('*, medicine_images(*)')
       .eq('status', 'verified')
-      .neq('donor_id', user!.id)
       .order('created_at', { ascending: false });
 
     if (!error && data) {
-      setMedicines(data);
+      // Filter out medicines donated by current user
+      const filtered = data.filter(m => m.donor_id !== user!.id);
+      setMedicines(filtered);
     }
     setLoading(false);
   };
@@ -160,12 +191,17 @@ export default function SearchMedicines() {
           </Card>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredMedicines.map((medicine) => (
+            {filteredMedicines.map((medicine) => {
+              const imageUrl = getMedicineImage(
+                medicine.drug_name, 
+                medicine.medicine_images?.[0]?.image_url
+              );
+              return (
               <Card key={medicine.id} className="overflow-hidden">
-                {medicine.medicine_images?.[0]?.image_url && (
-                  <div className="h-40">
+                {imageUrl && (
+                  <div className="h-40 bg-muted">
                     <img
-                      src={medicine.medicine_images[0].image_url}
+                      src={imageUrl}
                       alt={medicine.drug_name}
                       className="w-full h-full object-cover"
                     />
@@ -227,7 +263,8 @@ export default function SearchMedicines() {
                   </Button>
                 </CardContent>
               </Card>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
