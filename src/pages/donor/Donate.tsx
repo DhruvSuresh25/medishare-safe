@@ -122,6 +122,19 @@ export default function DonateMedicine() {
       return;
     }
 
+    // Check if medicine is expired
+    const expiryDate = new Date(extractedData.expiry_date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (expiryDate < today) {
+      toast({
+        variant: 'destructive',
+        title: 'Medicine expired',
+        description: 'Expired medicines cannot be donated. Please dispose of them safely.',
+      });
+      return;
+    }
+
     if (!sellingPrice || parseFloat(sellingPrice) <= 0) {
       toast({
         variant: 'destructive',
@@ -134,6 +147,33 @@ export default function DonateMedicine() {
     setSubmitting(true);
 
     try {
+      // Check if medicine is banned/illegal
+      const { data: bannedList } = await supabase
+        .from('banned_substances')
+        .select('substance_name, reason');
+      
+      if (bannedList && bannedList.length > 0) {
+        const drugNameLower = extractedData.drug_name.toLowerCase();
+        const genericNameLower = (extractedData.generic_name || '').toLowerCase();
+        
+        const bannedMatch = bannedList.find(banned => {
+          const bannedName = banned.substance_name.toLowerCase();
+          return drugNameLower.includes(bannedName) || 
+                 genericNameLower.includes(bannedName) ||
+                 bannedName.includes(drugNameLower) ||
+                 bannedName.includes(genericNameLower);
+        });
+
+        if (bannedMatch) {
+          toast({
+            variant: 'destructive',
+            title: 'Banned substance detected',
+            description: `This medicine cannot be donated: ${bannedMatch.reason || 'Controlled/illegal substance'}`,
+          });
+          setSubmitting(false);
+          return;
+        }
+      }
       // Upload image first
       let imageUrl = '';
       if (imageFile) {
