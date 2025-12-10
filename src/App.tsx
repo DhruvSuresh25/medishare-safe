@@ -17,6 +17,8 @@ import DonorDashboard from "./pages/donor/Dashboard";
 import DonateMedicine from "./pages/donor/Donate";
 import MyDonations from "./pages/donor/Donations";
 import DonorPickups from "./pages/donor/Pickups";
+import DonorSettings from "./pages/donor/Settings";
+import SearchMedicines from "./pages/SearchMedicines";
 
 // Pharmacist pages
 import PharmacistDashboard from "./pages/pharmacist/Dashboard";
@@ -58,6 +60,8 @@ const App = () => (
             <Route path="/donor/donate" element={<DonateMedicine />} />
             <Route path="/donor/donations" element={<MyDonations />} />
             <Route path="/donor/pickups" element={<DonorPickups />} />
+            <Route path="/donor/settings" element={<DonorSettings />} />
+            <Route path="/donor/search" element={<SearchMedicines />} />
             
             {/* Pharmacist Routes */}
             <Route path="/pharmacist" element={<PharmacistDashboard />} />

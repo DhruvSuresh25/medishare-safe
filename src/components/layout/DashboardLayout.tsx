@@ -47,6 +47,7 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
       { label: 'Dashboard', icon: <Home size={20} />, href: '/donor' },
       { label: 'Donate Medicine', icon: <Package size={20} />, href: '/donor/donate' },
       { label: 'My Donations', icon: <FileText size={20} />, href: '/donor/donations' },
+      { label: 'Search Medicines', icon: <ClipboardCheck size={20} />, href: '/donor/search' },
       { label: 'Pickups', icon: <Truck size={20} />, href: '/donor/pickups' },
       { label: 'Settings', icon: <Settings size={20} />, href: '/donor/settings' },
     ],

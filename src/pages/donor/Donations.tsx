@@ -5,14 +5,29 @@ import { supabase } from '@/integrations/supabase/client';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Package, Clock, CheckCircle, XCircle, Truck, Calendar, IndianRupee } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Loader2, Package, Clock, CheckCircle, XCircle, Truck, Calendar, IndianRupee, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function MyDonations() {
   const { user, loading: authLoading } = useAuth();
   const [donations, setDonations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -37,6 +52,51 @@ export default function MyDonations() {
       setDonations(data);
     }
     setLoading(false);
+  };
+
+  const handleDelete = async (donationId: string, status: string) => {
+    if (status !== 'pending') {
+      toast({
+        variant: 'destructive',
+        title: 'Cannot delete',
+        description: 'Only pending donations can be deleted.',
+      });
+      return;
+    }
+
+    setDeleting(donationId);
+    try {
+      // Delete medicine images first
+      await supabase
+        .from('medicine_images')
+        .delete()
+        .eq('medicine_id', donationId);
+
+      // Delete the medicine
+      const { error } = await supabase
+        .from('medicines')
+        .delete()
+        .eq('id', donationId)
+        .eq('donor_id', user!.id)
+        .eq('status', 'pending');
+
+      if (error) throw error;
+
+      toast({
+        title: 'Donation deleted',
+        description: 'Your donation has been removed.',
+      });
+
+      fetchDonations();
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Delete failed',
+        description: error.message || 'Please try again.',
+      });
+    } finally {
+      setDeleting(null);
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -148,9 +208,47 @@ export default function MyDonations() {
                         </div>
                       )}
 
-                      <p className="text-xs text-muted-foreground mt-3">
-                        Submitted on {format(new Date(donation.created_at), 'PPP')}
-                      </p>
+                      <div className="flex items-center justify-between mt-3">
+                        <p className="text-xs text-muted-foreground">
+                          Submitted on {format(new Date(donation.created_at), 'PPP')}
+                        </p>
+                        
+                        {donation.status === 'pending' && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                disabled={deleting === donation.id}
+                              >
+                                {deleting === donation.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Donation</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Are you sure you want to delete "{donation.drug_name}"? This action cannot be undone.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDelete(donation.id, donation.status)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
