@@ -36,8 +36,10 @@ export default function DonateMedicine() {
     mrp: '',
   });
   const [quantity, setQuantity] = useState(1);
+  const [sellingPrice, setSellingPrice] = useState('');
   const [isSealed, setIsSealed] = useState(true);
   const [isOriginalPackaging, setIsOriginalPackaging] = useState(true);
+  const [expiryTouched, setExpiryTouched] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -110,6 +112,25 @@ export default function DonateMedicine() {
       return;
     }
 
+    if (!extractedData.expiry_date) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing expiry date',
+        description: 'Please enter the expiry date.',
+      });
+      setExpiryTouched(true);
+      return;
+    }
+
+    if (!sellingPrice || parseFloat(sellingPrice) <= 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing selling price',
+        description: 'Please enter a valid selling price.',
+      });
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -139,8 +160,9 @@ export default function DonateMedicine() {
           generic_name: extractedData.generic_name || null,
           manufacturer: extractedData.manufacturer || null,
           batch_number: extractedData.batch_number || null,
-          expiry_date: extractedData.expiry_date || null,
+          expiry_date: extractedData.expiry_date,
           mrp: extractedData.mrp ? parseFloat(extractedData.mrp) : null,
+          selling_price: parseFloat(sellingPrice),
           quantity,
           is_sealed: isSealed,
           is_original_packaging: isOriginalPackaging,
@@ -339,13 +361,21 @@ export default function DonateMedicine() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="expiry_date">Expiry Date</Label>
+                  <Label htmlFor="expiry_date">Expiry Date *</Label>
                   <Input
                     id="expiry_date"
                     type="date"
+                    required
                     value={extractedData.expiry_date}
-                    onChange={(e) => setExtractedData({ ...extractedData, expiry_date: e.target.value })}
+                    onChange={(e) => {
+                      setExtractedData({ ...extractedData, expiry_date: e.target.value });
+                      setExpiryTouched(true);
+                    }}
+                    className={expiryTouched && !extractedData.expiry_date ? 'border-destructive' : ''}
                   />
+                  {expiryTouched && !extractedData.expiry_date && (
+                    <p className="text-sm text-destructive">Expiry date is required</p>
+                  )}
                 </div>
               </div>
 
@@ -360,6 +390,22 @@ export default function DonateMedicine() {
                     placeholder="Maximum retail price"
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="selling_price">Selling Price (₹) *</Label>
+                  <Input
+                    id="selling_price"
+                    type="number"
+                    min={0}
+                    required
+                    value={sellingPrice}
+                    onChange={(e) => setSellingPrice(e.target.value)}
+                    placeholder="Price for buyers"
+                    className={!sellingPrice && expiryTouched ? 'border-destructive' : ''}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="quantity">Quantity</Label>
                   <Input
