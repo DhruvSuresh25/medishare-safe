@@ -260,6 +260,7 @@ export type Database = {
           quantity: number
           rejection_reason: string | null
           schedule: Database["public"]["Enums"]["medicine_schedule"] | null
+          selling_price: number | null
           status: Database["public"]["Enums"]["medicine_status"] | null
           unit: string | null
           updated_at: string | null
@@ -281,6 +282,7 @@ export type Database = {
           quantity?: number
           rejection_reason?: string | null
           schedule?: Database["public"]["Enums"]["medicine_schedule"] | null
+          selling_price?: number | null
           status?: Database["public"]["Enums"]["medicine_status"] | null
           unit?: string | null
           updated_at?: string | null
@@ -302,6 +304,7 @@ export type Database = {
           quantity?: number
           rejection_reason?: string | null
           schedule?: Database["public"]["Enums"]["medicine_schedule"] | null
+          selling_price?: number | null
           status?: Database["public"]["Enums"]["medicine_status"] | null
           unit?: string | null
           updated_at?: string | null
