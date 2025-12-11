@@ -40,6 +40,9 @@ import AdminMedicines from "./pages/admin/Medicines";
 // Profile
 import Profile from "./pages/Profile";
 
+// Publication
+import Publication from "./pages/Publication";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -84,6 +87,9 @@ const App = () => (
             
             {/* Profile */}
             <Route path="/profile" element={<Profile />} />
+            
+            {/* Publication */}
+            <Route path="/publication" element={<Publication />} />
             
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
