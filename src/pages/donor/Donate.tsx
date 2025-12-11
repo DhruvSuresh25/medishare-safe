@@ -86,16 +86,6 @@ export default function DonateMedicine() {
           mrp: data.mrp || '',
           schedule: data.schedule || 'otc',
         });
-        
-        // Check if prescription medicine detected
-        const schedule = (data.schedule || '').toLowerCase();
-        if (schedule === 'h' || schedule === 'h1' || schedule === 'x') {
-          toast({
-            variant: 'destructive',
-            title: 'Prescription Medicine Detected',
-            description: `This is a Schedule ${schedule.toUpperCase()} medicine that requires a prescription. Prescription medicines cannot be redistributed through this platform.`,
-          });
-        }
         setStep(2);
         toast({
           title: 'Data extracted!',
@@ -153,17 +143,6 @@ export default function DonateMedicine() {
         variant: 'destructive',
         title: 'Missing selling price',
         description: 'Please enter a valid selling price.',
-      });
-      return;
-    }
-
-    // Check if prescription medicine (Schedule H, H1, X)
-    const schedule = extractedData.schedule.toLowerCase();
-    if (schedule === 'h' || schedule === 'h1' || schedule === 'x') {
-      toast({
-        variant: 'destructive',
-        title: 'Prescription Medicine Not Allowed',
-        description: `Schedule ${schedule.toUpperCase()} medicines require a prescription and cannot be redistributed. Please dispose of them safely or return to manufacturer.`,
       });
       return;
     }
