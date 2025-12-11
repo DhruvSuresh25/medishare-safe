@@ -35,7 +35,7 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are an expert at extracting medicine information from packaging labels. 
+            content: `You are an expert at extracting medicine information from packaging labels in India. 
 Extract the following fields from the medicine image:
 - drug_name: The brand/trade name of the medicine
 - generic_name: The generic/salt composition
@@ -43,9 +43,10 @@ Extract the following fields from the medicine image:
 - batch_number: Batch or lot number
 - expiry_date: In YYYY-MM-DD format if possible
 - mrp: Maximum retail price (just the number)
+- schedule: The drug schedule classification. Look for markings like "Schedule H", "Sch. H", "Rx", "Schedule H1", "Schedule X", or red/black stripe with prescription warning. Values: "h" for Schedule H, "h1" for Schedule H1, "x" for Schedule X, "otc" for over-the-counter (no prescription marking). If you see "TO BE SOLD BY RETAIL ON THE PRESCRIPTION OF A REGISTERED MEDICAL PRACTITIONER ONLY" or similar text, it's likely Schedule H.
 
 Return ONLY a valid JSON object with these fields. If a field cannot be found, use an empty string.
-Example: {"drug_name":"Crocin","generic_name":"Paracetamol 500mg","manufacturer":"GSK","batch_number":"B123","expiry_date":"2025-06","mrp":"25.50"}`
+Example: {"drug_name":"Crocin","generic_name":"Paracetamol 500mg","manufacturer":"GSK","batch_number":"B123","expiry_date":"2025-06","mrp":"25.50","schedule":"otc"}`
           },
           {
             role: 'user',
@@ -83,6 +84,7 @@ Example: {"drug_name":"Crocin","generic_name":"Paracetamol 500mg","manufacturer"
       batch_number: '',
       expiry_date: '',
       mrp: '',
+      schedule: 'otc',
     };
 
     try {
